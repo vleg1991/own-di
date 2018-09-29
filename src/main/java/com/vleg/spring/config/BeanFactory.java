@@ -9,11 +9,7 @@ import java.util.List;
 
 public class BeanFactory {
 
-    private BeanDefinitionRegistry beanDefinitionRegistry;
-
-    public BeanFactory() {
-        this.beanDefinitionRegistry = BeanDefinitionRegistry.newInstance();
-    }
+    private final BeanDefinitionRegistry beanDefinitionRegistry = BeanDefinitionRegistry.newInstance();
 
     public Object getBean(String beanName) throws InvocationTargetException, IllegalAccessException, InstantiationException {
         BeanDefinition beanDefinition = beanDefinitionRegistry.getBeanDefenitionByName(beanName);

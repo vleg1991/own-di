@@ -2,12 +2,14 @@ package com.vleg.spring.entity;
 
 import com.vleg.spring.annotation.Bean;
 import com.vleg.spring.annotation.Configuration;
+import com.vleg.spring.annotation.Scope;
 import org.h2.util.StringUtils;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,7 +44,7 @@ public class BeanDefinitionRegistry {
                         .forEach(method ->
                                 result.put(
                                         resolveBeanName(method),
-                                        new BeanDefinition(method)
+                                        new BeanDefinition(method, resolveBeanType(method))
                                 )
                         )
         );
@@ -55,5 +57,13 @@ public class BeanDefinitionRegistry {
         return StringUtils.isNullOrEmpty(specifiedBeanName)
                 ? method.getReturnType().getName()
                 : specifiedBeanName;
+    }
+
+    private BeanType resolveBeanType(Method method){
+        Scope scopeAnnotation = method.getAnnotation(Scope.class);
+        if (Objects.nonNull(scopeAnnotation)) {
+            return scopeAnnotation.name();
+        }
+        return BeanType.SINGLTON;
     }
 }
