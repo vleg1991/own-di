@@ -2,20 +2,28 @@ package com.vleg.spring.entity;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BeanDefinition {
 
+    private final String beanName;
     private final BeanType beanType;
     private final Method creationMethod;
     private final Class configurationClass;
-    private final List<Class> beanDependencies;
+    private final Set<Class> beanDependencies;
 
-    public BeanDefinition(Method creationMethod, BeanType beanType) {
+    public BeanDefinition(String beanName, BeanType beanType, Method creationMethod) {
+        this.beanName = beanName;
         this.beanType = beanType;
         this.creationMethod = creationMethod;
         this.configurationClass = creationMethod.getDeclaringClass();
-        this.beanDependencies = Arrays.asList(creationMethod.getParameterTypes());
+        this.beanDependencies = Arrays.asList(creationMethod.getParameterTypes()).stream().collect(Collectors.toSet());
+    }
+
+    public String getBeanName() {
+        return beanName;
     }
 
     public BeanType getBeanType() {
@@ -30,7 +38,23 @@ public class BeanDefinition {
         return configurationClass;
     }
 
-    public List<Class> getBeanDependencies() {
+    public Set<Class> getBeanDependencies() {
         return beanDependencies;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o.getClass().equals(BeanDefinition.class))) return false;
+        BeanDefinition that = (BeanDefinition) o;
+        return beanType == that.beanType &&
+                Objects.equals(beanName, that.beanName) &&
+                Objects.equals(creationMethod, that.creationMethod) &&
+                Objects.equals(configurationClass, that.configurationClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(beanName, beanType, creationMethod, configurationClass, beanDependencies);
     }
 }

@@ -1,14 +1,28 @@
 package com.vleg.spring.context;
 
-import com.vleg.spring.entity.BeanResistry;
-
 public class ApplicationContext {
 
-    private final BeanResistry beanResistry;
+    private final BeanFactory beanFactory = new BeanFactory();
 
-    public ApplicationContext() {
-        this.beanResistry = BeanResistry.newInstance();
+    public void refresh() {
+        beanFactory.loadSingltonBeansToRegistry();
     }
 
+    /**
+     *
+     * Проверяет все зависиомости на возможность создания и достаточность зависимостей
+     *
+     * */
+    public void validateDependecies () {
 
+    }
+
+    /**
+     *
+     * Запуск приложения
+     *
+     * */
+    public void run() {
+
+    }
 }

@@ -8,30 +8,30 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class BeanDefinitionRegistry {
 
-    private final Map<String, BeanDefinition> beanDefinitions = searchBeanDefinitions();
+    private final Set<BeanDefinition> beanDefinitions = searchBeanDefinitions();
 
     public static BeanDefinitionRegistry newInstance() {
         return new BeanDefinitionRegistry();
     }
 
     public BeanDefinition getBeanDefenitionByName(String beanName) {
-        return beanDefinitions.get(beanName);
+        return beanDefinitions.stream()
+                .filter(beanDefinition -> beanName != null && beanName.equals(beanDefinition.getBeanName())).findFirst().get();
     }
 
-    public Map<String, BeanDefinition> getBeanDefinitions() {
+    public Set<BeanDefinition> getBeanDefinitions() {
         return beanDefinitions;
     }
 
-    private Map<String, BeanDefinition> searchBeanDefinitions() {
+    private Set<BeanDefinition> searchBeanDefinitions() {
 
-        Map<String, BeanDefinition> result = new ConcurrentHashMap<>();
+        Set<BeanDefinition> result = new HashSet<>();
 
         // TODO Проверить как будет работать если взять конструктор без параметров
         Reflections reflections = new Reflections("com.vleg.spring");
@@ -42,10 +42,7 @@ public class BeanDefinitionRegistry {
                 Arrays.asList(aClass.getMethods()).stream()
                         .filter(method -> method.isAnnotationPresent(Bean.class))
                         .forEach(method ->
-                                result.put(
-                                        resolveBeanName(method),
-                                        new BeanDefinition(method, resolveBeanType(method))
-                                )
+                                result.add(new BeanDefinition(resolveBeanName(method), resolveBeanType(method), method))
                         )
         );
 
