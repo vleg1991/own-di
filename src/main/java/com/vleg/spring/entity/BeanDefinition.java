@@ -1,5 +1,6 @@
 package com.vleg.spring.entity;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
@@ -10,14 +11,17 @@ public class BeanDefinition {
 
     private final String beanName;
     private final BeanType beanType;
-    private final Method creationMethod;
+    private final CreationMethod creationMethod;
     private final Class configurationClass;
     private final Set<Class> beanDependencies;
 
-    public BeanDefinition(String beanName, BeanType beanType, Method creationMethod) {
+    public BeanDefinition(String beanName, BeanType beanType, Executable creationMethod) {
         this.beanName = beanName;
         this.beanType = beanType;
-        this.creationMethod = creationMethod;
+        if (Method.class.equals(creationMethod.getClass()))
+            this.creationMethod = new CreationMethod(creationMethod, CreationType.METHOD);
+        else
+            this.creationMethod = new CreationMethod(creationMethod, CreationType.CONSTRUCTOR);
         this.configurationClass = creationMethod.getDeclaringClass();
         this.beanDependencies = Arrays.asList(creationMethod.getParameterTypes()).stream().collect(Collectors.toSet());
     }
@@ -30,7 +34,7 @@ public class BeanDefinition {
         return beanType;
     }
 
-    public Method getCreationMethod() {
+    public CreationMethod getCreationMethod() {
         return creationMethod;
     }
 
