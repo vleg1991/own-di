@@ -43,9 +43,7 @@ public class BeanDefinitionRegistry {
 
         // TODO Проверить как будет работать если взять конструктор без параметров
         Reflections reflections = new Reflections("com.vleg.spring");
-
         Set<Class<?>> configurationClasses = reflections.getTypesAnnotatedWith(Configuration.class);
-
         configurationClasses.stream().forEach(aClass ->
                 Arrays.asList(aClass.getMethods()).stream()
                         .filter(method -> method.isAnnotationPresent(Bean.class))
@@ -62,19 +60,16 @@ public class BeanDefinitionRegistry {
         Set<BeanDefinition> result = new HashSet<>();
 
         Reflections reflections = new Reflections("com.vleg.spring");
-
         Set<Class<?>> componentClasses = reflections.getTypesAnnotatedWith(Component.class);
-
         componentClasses.stream().forEach(aClass -> {
-
             String beanName = aClass.getName();
             BeanType beanType = resolveBeanType(aClass.getAnnotation(Scope.class));
 
             Set<Constructor> annotatedConstructors = Arrays.stream(aClass.getDeclaredConstructors())
-                    .filter(constructor -> constructor.isAnnotationPresent(Autowired.class))
+                    .filter(constructor -> constructor.isAnnotationPresent(Autowired.class) || constructor.getParameterCount() == 0)
                     .collect(Collectors.toSet());
             if (annotatedConstructors.stream().count() != 1)
-                throw new BeanResolveException();
+                throw new BeanResolveException("Component should contains SINGLE constructor annotated by @Autowired");
             Constructor beanConstructor = annotatedConstructors.stream().findFirst().get();
 
             result.add(new BeanDefinition(beanName, beanType, beanConstructor));

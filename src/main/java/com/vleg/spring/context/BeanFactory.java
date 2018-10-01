@@ -26,8 +26,7 @@ public class BeanFactory {
     }
 
     private  Object invokeCreation(BeanDefinition beanDefinition, Set<Object> args) throws InvocationTargetException, IllegalAccessException, InstantiationException {
-        Object configInstance = beanDefinition.getConfigurationClass().newInstance();
-        return beanDefinition.getCreationMethod().invoke(configInstance, args.toArray());
+        return beanDefinition.getCreationMethod().invoke(args.toArray());
     }
 
     private Set<Object> getDependencyInstances(Set<Class> dependencyClasses) {
@@ -48,9 +47,9 @@ public class BeanFactory {
 
                     Boolean isSecondDependOn = firstBeanDependencies.stream().anyMatch(o -> secondBeanDependencies.contains(o));
                     if (isSecondDependOn)
-                        return -1;
-                    else
                         return 1;
+                    else
+                        return -1;
                 })
                 .forEach(beanDefinition -> beanResistry.getBeanByName(beanDefinition.getBeanName()));
     }

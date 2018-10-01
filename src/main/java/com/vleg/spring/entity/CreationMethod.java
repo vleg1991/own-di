@@ -26,12 +26,15 @@ public class CreationMethod {
         return creationType;
     }
 
-    public Object invoke(Object invokableInstance, Object... args) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+    public Object invoke(Object... args) throws InvocationTargetException, IllegalAccessException, InstantiationException {
         Object result = null;
-        if (CreationType.METHOD.equals(this.creationType))
-            result = ((Method) creationMethod).invoke(invokableInstance, args);
+        if (CreationType.METHOD.equals(this.creationType)) {
+            Method method = ((Method) creationMethod);
+            Object invokableInstance = method.getDeclaringClass().newInstance();
+            result = method.invoke(invokableInstance, args);
+        }
         if (CreationType.CONSTRUCTOR.equals(this.creationType))
-            result = ((Constructor) creationMethod).newInstance(invokableInstance, args);
+            result = ((Constructor) creationMethod).newInstance(args);
         if (Objects.nonNull(result))
             return result;
         else
