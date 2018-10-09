@@ -4,6 +4,10 @@ public class ApplicationContext {
 
     private final BeanFactory beanFactory = new BeanFactory();
 
+    public ApplicationContext() {
+        refresh();
+    }
+
     public void refresh() {
         beanFactory.loadSingltonBeansToRegistry();
     }

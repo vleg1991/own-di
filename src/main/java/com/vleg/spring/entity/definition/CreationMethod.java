@@ -1,4 +1,4 @@
-package com.vleg.spring.entity;
+package com.vleg.spring.entity.definition;
 
 import com.vleg.spring.exception.BeanCreationException;
 
@@ -39,5 +39,19 @@ public class CreationMethod {
             return result;
         else
             throw new BeanCreationException("Check creation logic");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CreationMethod)) return false;
+        CreationMethod that = (CreationMethod) o;
+        return Objects.equals(creationMethod, that.creationMethod) &&
+                creationType == that.creationType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(creationMethod, creationType);
     }
 }

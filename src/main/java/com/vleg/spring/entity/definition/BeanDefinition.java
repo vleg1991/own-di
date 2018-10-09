@@ -1,10 +1,14 @@
-package com.vleg.spring.entity;
+package com.vleg.spring.entity.definition;
+
+import com.vleg.spring.annotation.Qualifier;
+import com.vleg.spring.exception.BeanResolveException;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class BeanDefinition {
@@ -13,7 +17,7 @@ public class BeanDefinition {
     private final BeanType beanType;
     private final CreationMethod creationMethod;
     private final Class configurationClass;
-    private final Set<Class> beanDependencies;
+    private final Set<BeanDependency> beanDependencies;
 
     public BeanDefinition(String beanName, BeanType beanType, Executable creationMethod) {
         this.beanName = beanName;
@@ -23,7 +27,15 @@ public class BeanDefinition {
         else
             this.creationMethod = new CreationMethod(creationMethod, CreationType.CONSTRUCTOR);
         this.configurationClass = creationMethod.getDeclaringClass();
-        this.beanDependencies = Arrays.asList(creationMethod.getParameterTypes()).stream().collect(Collectors.toSet());
+        this.beanDependencies = Arrays.stream(creationMethod.getParameters())
+                .map(parameter -> {
+                    Qualifier annotation = parameter.getAnnotation(Qualifier.class);
+                    if (Objects.nonNull(annotation))
+                        return new BeanDependency(parameter.getType(), annotation.beanName());
+                    else
+                        return new BeanDependency(parameter.getType(), "");
+                })
+                .collect(Collectors.toSet());
     }
 
     public String getBeanName() {
@@ -42,8 +54,29 @@ public class BeanDefinition {
         return configurationClass;
     }
 
-    public Set<Class> getBeanDependencies() {
+    public Set<BeanDependency> getBeanDependencies() {
         return beanDependencies;
+    }
+
+    public Class getBeanClassType() {
+        if (CreationType.CONSTRUCTOR.equals(creationMethod.getCreationType()))
+            return configurationClass;
+        if (CreationType.METHOD.equals(creationMethod.getCreationType()))
+            return ((Method)creationMethod.getCreationMethod()).getReturnType();
+        throw new BeanResolveException("Cannot resolve bean class type");
+    }
+
+    public Boolean nonBeanNameSpecified() {
+        return !isBeanNameSpecified();
+    }
+
+    public Boolean isBeanNameSpecified() {
+        try {
+            UUID.fromString(beanName);
+        } catch (Exception e) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -60,5 +93,13 @@ public class BeanDefinition {
     @Override
     public int hashCode() {
         return Objects.hash(beanName, beanType, creationMethod, configurationClass, beanDependencies);
+    }
+
+    @Override
+    public String toString() {
+        return "Bean class type=" + getBeanClassType() +
+               ", configurationClass=" + configurationClass +
+               ", beanDependencies=" + beanDependencies +
+               "}\n";
     }
 }
