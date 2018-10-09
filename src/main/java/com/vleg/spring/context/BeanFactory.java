@@ -88,7 +88,7 @@ public class BeanFactory {
     }
 
     public void loadSingltonBeansToRegistry() {
-        beanDefinitionRegistry.getBeanDefinitionsByName().stream()
+        beanDefinitionRegistry.getBeanDefinitions().stream()
                 .filter(beanDefinition -> BeanType.SINGLTON.equals(beanDefinition.getBeanType()))
                 .forEach(beanDefinition -> beanResistry.getBeanByName(beanDefinition.getBeanName()));
     }

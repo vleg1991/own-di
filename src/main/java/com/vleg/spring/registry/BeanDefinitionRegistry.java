@@ -49,7 +49,7 @@ public class BeanDefinitionRegistry {
         return resolveBean(beanClass, suitedBeanDefinitions);
     }
 
-    public Collection<BeanDefinition> getBeanDefinitionsByName() {
+    public Collection<BeanDefinition> getBeanDefinitions() {
         return beanDefinitionsByName.values();
     }
 

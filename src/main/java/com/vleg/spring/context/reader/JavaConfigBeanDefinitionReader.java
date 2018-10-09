@@ -18,7 +18,7 @@ public class JavaConfigBeanDefinitionReader implements BeanDefinitionReader {
 
     public static JavaConfigBeanDefinitionReader newInstance() {
         JavaConfigBeanDefinitionReader result = new JavaConfigBeanDefinitionReader();
-        result.suppliers = searchBeanCoppliers();
+        result.suppliers = searchBeanSuppliers();
         return result;
     }
 
@@ -34,7 +34,7 @@ public class JavaConfigBeanDefinitionReader implements BeanDefinitionReader {
         return suppliers.stream().findFirst().get();
     }
 
-    private static Set<BeanSupplier> searchBeanCoppliers() {
+    private static Set<BeanSupplier> searchBeanSuppliers() {
 
         Set<BeanSupplier> result = new HashSet<>();
 
