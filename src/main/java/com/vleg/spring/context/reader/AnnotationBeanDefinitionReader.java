@@ -3,6 +3,7 @@ package com.vleg.spring.context.reader;
 import com.vleg.spring.annotation.Component;
 import com.vleg.spring.entity.supplier.AnnotationBeanSupplier;
 import com.vleg.spring.entity.supplier.BeanSupplier;
+import com.vleg.spring.utils.ComponentScanUtils;
 import org.reflections.Reflections;
 
 import java.util.Set;
@@ -10,7 +11,8 @@ import java.util.stream.Collectors;
 
 public class AnnotationBeanDefinitionReader implements BeanDefinitionReader {
 
-    private static Reflections reflections = new Reflections("com.vleg.spring");
+    private static String searchPath = ComponentScanUtils.getApplicationBeanScanPath();
+    private static Reflections reflections = new Reflections(searchPath);
     private Set<BeanSupplier> suppliers;
 
     public static AnnotationBeanDefinitionReader newInstance() {
