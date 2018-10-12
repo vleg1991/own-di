@@ -4,7 +4,7 @@ import com.vleg.spring.annotation.Bean;
 import com.vleg.spring.annotation.Configuration;
 import com.vleg.spring.entity.supplier.BeanSupplier;
 import com.vleg.spring.entity.supplier.JavaConfigBeanSupplier;
-import com.vleg.spring.utils.ComponentScanUtils;
+import com.vleg.spring.utils.ReflectionUtils;
 import org.reflections.Reflections;
 
 import java.util.Arrays;
@@ -14,8 +14,7 @@ import java.util.stream.Collectors;
 
 public class JavaConfigBeanDefinitionReader implements BeanDefinitionReader {
 
-    private static String searchPath = ComponentScanUtils.getApplicationBeanScanPath();
-    private static Reflections reflections = new Reflections(searchPath);
+    private static Reflections reflections = ReflectionUtils.getApplicationBeanScanReflections();
     private Set<BeanSupplier> suppliers;
 
     public static JavaConfigBeanDefinitionReader newInstance() {

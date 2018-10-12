@@ -13,7 +13,9 @@ public class AnnotationBeanDefinitionReaderTest {
 
     @Before
     public void setUp() throws Exception {
+        System.out.println(System.getProperty("sun.java.command"));
         annotationBeanDefinitionReader = AnnotationBeanDefinitionReader.newInstance();
+        System.out.println("1");
     }
 
     @Test
